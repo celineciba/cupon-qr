@@ -131,3 +131,216 @@
 </script>
 </body>
 </html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CÉLINE — Cupón</title>
+  <style>
+    :root{
+      --bg:#0a0b0d;
+      --panel:rgba(17,19,23,.92);
+      --text:#f2f4f7;
+      --muted:#a6adb9;
+      --line:rgba(255,255,255,.12);
+      --accent:rgba(230,214,168,.95);
+      --ok:#a7f3d0;
+      --bad:#ffb4b4;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(230,214,168,.08), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(255,255,255,.06), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:min(560px, 100%);
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    }
+    .banner{
+      height:150px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.68)),
+        url("BANER.jpeg") center/cover no-repeat;
+      border-bottom:1px solid var(--line);
+    }
+    .content{padding:18px}
+    .title{
+      text-align:center;
+      font-weight:900;
+      letter-spacing:2px;
+      color:rgba(230,214,168,.95);
+      margin:8px 0 10px;
+      text-transform:uppercase;
+    }
+    .code{
+      text-align:center;
+      font-size:28px;
+      font-weight:1000;
+      letter-spacing:3px;
+      margin:6px 0 6px;
+    }
+    .meta{
+      text-align:center;
+      color:rgba(255,255,255,.72);
+      font-size:12px;
+      line-height:1.45;
+      margin-bottom:14px;
+    }
+    .qrWrap{
+      display:flex;
+      justify-content:center;
+      margin:14px 0 8px;
+    }
+    .qrBox{
+      padding:14px;
+      border-radius:16px;
+      border:1px dashed rgba(230,214,168,.55);
+      background: rgba(0,0,0,.22);
+    }
+    .note{
+      text-align:center;
+      font-size:12px;
+      color:rgba(255,255,255,.6);
+      line-height:1.35;
+      margin:10px 0 14px;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+    }
+    a.btn{
+      flex:1;
+      display:block;
+      text-align:center;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      color:rgba(255,255,255,.88);
+      text-decoration:none;
+      background: rgba(0,0,0,.20);
+    }
+    .status{
+      text-align:center;
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .status.ok{color:var(--ok)}
+    .status.bad{color:var(--bad)}
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="banner"></div>
+
+    <div class="content">
+      <div class="title">CÉLINE — CUPÓN</div>
+      <div class="code" id="code">—</div>
+      <div class="meta" id="meta">—</div>
+
+      <div class="qrWrap">
+        <div class="qrBox">
+          <canvas id="qr" width="220" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="note">
+        Presenta este cupón en caja. El staff escaneará el QR para validar.
+      </div>
+
+      <div class="btnRow">
+        <a class="btn" href="./">Volver</a>
+        <a class="btn" id="openCheck" href="#" target="_blank" rel="noopener">Abrir validación</a>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+  </main>
+
+<script>
+  // ✅ MISMO SCRIPT_URL QUE TIENES EN index.html
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuqU7JeMiO8e1XSjNMsvqWrTEeefNWSaRNAmT4SZSVxZRyTz6gSSggypQpAILVyjGSkQ/exec";
+
+  const $ = (id) => document.getElementById(id);
+
+  // Lee parámetros del link: ?c=CODIGO&n=Nombre&p=Pais&w=+593...
+  const params = new URLSearchParams(window.location.search);
+  const c = (params.get("c") || "").trim();
+  const n = (params.get("n") || "").trim();
+  const p = (params.get("p") || "").trim();
+  const w = (params.get("w") || "").trim();
+
+  $("code").textContent = c || "—";
+  $("meta").textContent = `${(n||"").toUpperCase()} · ${p} · WhatsApp: ${w}`;
+
+  // Link que va dentro del QR (consulta a Apps Script para validar)
+  const checkUrl = `${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`;
+  $("openCheck").href = checkUrl;
+
+  // --- Generar QR SIN librerías externas (simple) ---
+  // Usamos un servicio público de imagen solo para dibujar el QR en canvas.
+  // (no te cuesta nada; si prefieres 100% offline, te lo hago con librería embebida)
+  async function drawQR(url){
+    const qrImgUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(url);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = $("qr");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.onerror = () => {
+      $("status").textContent = "No se pudo cargar el QR (pero el código igual sirve).";
+      $("status").className = "status bad";
+    };
+    img.src = qrImgUrl;
+  }
+
+  // Opcional: consultar estado automático para mostrar “válido/no existe”
+  async function checkNow(){
+    if (!c) return;
+    try{
+      const res = await fetch(checkUrl, { method:"GET" });
+      const out = await res.json();
+      if (out.ok && out.status === "VALIDO"){
+        $("status").textContent = "✅ Cupón válido (registrado).";
+        $("status").className = "status ok";
+      } else if (out.ok && out.status === "NO_EXISTE"){
+        $("status").textContent = "❌ Este cupón no existe.";
+        $("status").className = "status bad";
+      } else if (out.ok && out.status === "USADO"){
+        $("status").textContent = "⚠️ Este cupón ya fue usado.";
+        $("status").className = "status bad";
+      } else {
+        $("status").textContent = "No se pudo validar ahora (intenta en caja).";
+        $("status").className = "status bad";
+      }
+    } catch {
+      $("status").textContent = "No se pudo validar ahora (sin conexión).";
+      $("status").className = "status bad";
+    }
+  }
+
+  drawQR(checkUrl);
+  checkNow();
+</script>
+</body>
+</html>
