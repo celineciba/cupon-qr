@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CÉLINE — Cupón</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <div class="banner">
+      <img src="BANER.jpeg" alt="CÉLINE" />
+    </div>
+
+    <div class="couponBox">
+      <div class="couponTitle">CÉLINE — CUPÓN</div>
+      <div id="code" class="couponCode">---</div>
+
+      <div class="couponMeta">
+        <div id="name">—</div>
+        <div id="wa">—</div>
+      </div>
+
+      <div class="couponHint">Presenta este cupón en caja para validación.</div>
+    </div>
+
+    <div class="actions">
+      <a class="linkbtn" href="./">Volver</a>
+    </div>
+  </main>
+
+<script>
+  const raw = sessionStorage.getItem("CELINE_COUPON");
+  if (!raw) {
+    // Si entran directo sin datos
+    document.getElementById("code").textContent = "SIN DATOS";
+  } else {
+    const d = JSON.parse(raw);
+    document.getElementById("code").textContent = d.coupon || "—";
+    document.getElementById("name").textContent = d.nombre || "—";
+    document.getElementById("wa").textContent = `${d.pais || ""} — WhatsApp: ${d.wa_full || ""}`;
+  }
+</script>
+</body>
+</html>
