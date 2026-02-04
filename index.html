@@ -2,178 +2,157 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CÉLINE — Cupón de beneficio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
   <main class="card">
-    <div class="banner">
-      <img src="BANER.jpeg" alt="CÉLINE" />
-    </div>
+    <div class="banner"></div>
 
-    <h1>Cupon de beneficio</h1>
+    <h1>Cupón de beneficio</h1>
     <p class="sub">Completa tus datos y genera tu cupón. Presenta el cupón en caja para validación.</p>
 
-    <form id="f">
+    <form id="f" novalidate>
       <label>NOMBRE Y APELLIDO</label>
-      <input id="nombre" required placeholder="Ej. Juan Pérez" />
+      <input id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required minlength="5" />
 
       <label>WHATSAPP</label>
-      <div class="row">
-        <select id="pais" required></select>
-        <input id="celular" required inputmode="numeric" placeholder="Solo dígitos" />
+      <div class="row2">
+        <select id="pais" name="pais" required>
+          <option value="" selected disabled>Selecciona tu país</option>
+          <option value="Ecuador (+593)" data-code="+593">Ecuador (+593)</option>
+          <option value="Colombia (+57)" data-code="+57">Colombia (+57)</option>
+          <option value="Perú (+51)" data-code="+51">Perú (+51)</option>
+          <option value="Chile (+56)" data-code="+56">Chile (+56)</option>
+          <option value="Argentina (+54)" data-code="+54">Argentina (+54)</option>
+          <option value="México (+52)" data-code="+52">México (+52)</option>
+          <option value="España (+34)" data-code="+34">España (+34)</option>
+          <option value="Estados Unidos (+1)" data-code="+1">Estados Unidos (+1)</option>
+          <option value="Otro" data-code="">Otro (selecciona y escribe tu número)</option>
+        </select>
+
+        <input id="celular" name="celular" placeholder="Solo dígitos" required inputmode="numeric" />
       </div>
-      <div class="help">Elige tu país y escribe tu número de WhatsApp (solo dígitos).</div>
+      <p class="hint">Elige tu país y escribe tu número de WhatsApp (solo dígitos).</p>
 
       <label>CORREO</label>
-      <input id="email" type="email" required placeholder="Ej. nombre@gmail.com" />
+      <input id="email" name="email" placeholder="Ej. nombre@gmail.com" required type="email" />
 
       <label>RED FAVORITA</label>
-      <select id="red" required>
+      <select id="red" name="red" required>
         <option value="" selected disabled>Selecciona...</option>
-        <option>Instagram</option>
-        <option>TikTok</option>
-        <option>Facebook</option>
-        <option>Otro</option>
+        <option value="Instagram">Instagram</option>
+        <option value="TikTok">TikTok</option>
+        <option value="Facebook">Facebook</option>
+        <option value="Otro">Otro</option>
       </select>
 
       <label>USUARIO REAL / LINK</label>
-      <input id="usuario" required placeholder="@tuusuario o https://..." />
-      <div class="help">Debe ser real: @usuario o un link válido (https://...)</div>
+      <input id="usuario" name="usuario" placeholder="@tuusuario o https://..." required />
+      <p class="hint">Debe ser real: @usuario o un link válido (https://...)</p>
 
       <button id="btn" type="submit">GENERAR CUPÓN</button>
 
-      <p class="fine">Al enviar aceptas que CÉLINE use estos datos solo para esta promoción y novedades.</p>
+      <p id="msg" class="msg"></p>
 
-      <div id="msg" class="msg" aria-live="polite"></div>
+      <p class="foot">
+        Al enviar aceptas que CÉLINE use estos datos solo para esta promoción y novedades.
+      </p>
     </form>
   </main>
 
-<script>
-  // === TU WEB APP URL (Apps Script) ===
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuqU7JeMiO8e1XSjNMsvqWrTEeefNWSaRNAmT4SZSVxZRyTz6gSSggypQpAILVyjGSkQ/exec";
-  const ORIGEN = "https://celineciba.github.io/cupon-qr/";
+  <script>
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbxuqU7JeMiO8e1XSjNMsvqWrTEeefNWSaRNAmT4SZSVxZRyTz6gSSggypQpAILVyjGSkQ/exec";
+    const ORIGEN = "https://celineciba.github.io/cupon-qr/";
 
-  const COUNTRIES = [
-    ["Ecuador", "+593"],
-    ["Colombia", "+57"],
-    ["Perú", "+51"],
-    ["Estados Unidos", "+1"],
-    ["España", "+34"],
-    ["México", "+52"],
-    ["Argentina", "+54"],
-    ["Chile", "+56"],
-    ["Panamá", "+507"],
-    ["Otro", ""]
-  ];
+    const $ = (id) => document.getElementById(id);
+    const msg = $("msg");
+    const btn = $("btn");
 
-  const elPais = document.getElementById("pais");
-  COUNTRIES.forEach(([name, code]) => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = code ? `${name} (${code})` : `${name}`;
-    opt.dataset.code = code;
-    elPais.appendChild(opt);
-  });
-  elPais.value = "Ecuador";
+    function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
+    function isValidUserOrLink(v){
+      v = String(v||"").trim();
+      if (!v) return false;
+      if (v.startsWith("@")) return v.length >= 3;
+      if (v.startsWith("http://") || v.startsWith("https://")) return true;
+      return false;
+    }
 
-  const msg = (t, ok=false) => {
-    const m = document.getElementById("msg");
-    m.textContent = t;
-    m.className = "msg " + (ok ? "ok" : "err");
-  };
+    $("f").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      msg.textContent = "";
+      msg.className = "msg";
 
-  const onlyDigits = (s) => (s || "").replace(/\D+/g,"");
+      const nombre = $("nombre").value.trim();
+      const paisOpt = $("pais").selectedOptions[0];
+      const pais = $("pais").value;
+      const code = (paisOpt && paisOpt.dataset && paisOpt.dataset.code) ? paisOpt.dataset.code : "";
+      const celular = onlyDigits($("celular").value);
+      const email = $("email").value.trim();
+      const red = $("red").value;
+      const usuario = $("usuario").value.trim();
 
-  const isValidUsuario = (s) => {
-    s = (s||"").trim();
-    if (!s) return false;
-    if (s.startsWith("@") && s.length >= 3) return true;
-    if (s.startsWith("https://") || s.startsWith("http://")) return true;
-    return false;
-  };
+      if (!nombre || nombre.length < 5) return fail("Ingresa tu nombre y apellido (mínimo 5 caracteres).");
+      if (!pais) return fail("Selecciona tu país de WhatsApp.");
+      if (!celular || celular.length < 7) return fail("Ingresa tu número de WhatsApp (solo dígitos).");
+      if (!email || !email.includes("@")) return fail("Ingresa un correo válido.");
+      if (!red) return fail("Selecciona tu red favorita.");
+      if (!isValidUserOrLink(usuario)) return fail("Ingresa un @usuario real o un link válido (https://...).");
 
-  const normalizeName = (s) => (s||"").trim().replace(/\s+/g," ");
+      const wa_full = (code ? code : "") + celular;
 
-  document.getElementById("celular").addEventListener("input", (e) => {
-    e.target.value = onlyDigits(e.target.value);
-  });
+      btn.disabled = true;
+      btn.textContent = "GENERANDO...";
 
-  document.getElementById("f").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg("");
+      try {
+        const payload = {
+          nombre,
+          pais,
+          celular,
+          email,
+          red,
+          usuario,
+          origen: ORIGEN,
+          wa_full
+        };
 
-    const nombre  = normalizeName(document.getElementById("nombre").value);
-    const pais    = elPais.value;
-    const code    = (elPais.selectedOptions[0]?.dataset?.code || "").trim();
-    const celular = onlyDigits(document.getElementById("celular").value);
-    const email   = (document.getElementById("email").value || "").trim();
-    const red     = document.getElementById("red").value;
-    const usuario = (document.getElementById("usuario").value || "").trim();
+        const res = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-    if (!nombre || nombre.length < 5) return msg("Escribe nombre y apellido real.");
-    if (!pais) return msg("Selecciona país.");
-    if (!celular || celular.length < 7) return msg("Número de WhatsApp inválido (solo dígitos).");
-    if (!email) return msg("Correo inválido.");
-    if (!red) return msg("Selecciona red favorita.");
-    if (!isValidUsuario(usuario)) return msg("Usuario/link inválido. Usa @usuario o https://...");
+        const data = await res.json();
 
-    // Construimos WA_FULL (para guardar en hoja y usar en cupón)
-    // Quitamos ceros iniciales típicos (ej: 09...) para no duplicar con +593
-    let cel = celular;
-    if (code === "+593" && cel.startsWith("0")) cel = cel.replace(/^0+/, "");
-    const wa_full = (code ? code : "") + cel;
-
-    const payload = { nombre, pais, celular: cel, email, red, usuario, origen: ORIGEN, wa_full };
-
-    const btn = document.getElementById("btn");
-    btn.disabled = true;
-    btn.textContent = "GENERANDO...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-
-      const json = await res.json();
-
-      if (!json.ok) {
-        if (json.reason === "DUPLICATE") {
-          msg(json.message || "Ya existe un cupón con estos datos. No se puede generar otro.");
-        } else {
-          msg(json.error || "Error de conexión / guardado.");
+        if (!data.ok) {
+          if (data.error === "DUPLICADO") {
+            return fail("Ya existe un cupón con esos datos. No puedes generar otro.");
+          }
+          return fail("Error: " + (data.error || "No se pudo generar el cupón"));
         }
+
+        // Redirigir a la página elegante del cupón
+        const url = new URL("coupon.html", window.location.href);
+        url.searchParams.set("coupon", data.coupon);
+        url.searchParams.set("nombre", nombre);
+        url.searchParams.set("pais", pais);
+        url.searchParams.set("wa_full", wa_full);
+        window.location.href = url.toString();
+
+      } catch (e) {
+        fail("Error de conexión. Revisa la implementación del Apps Script (acceso: Cualquiera).");
+      } finally {
         btn.disabled = false;
         btn.textContent = "GENERAR CUPÓN";
-        return;
       }
+    });
 
-      // Guardamos datos para mostrar en la página elegante
-      const couponData = {
-        coupon: json.coupon,
-        nombre,
-        pais: (code ? `${pais} (${code})` : pais),
-        wa_full: wa_full,
-        email,
-        red,
-        usuario
-      };
-
-      sessionStorage.setItem("CELINE_COUPON", JSON.stringify(couponData));
-
-      // REDIRIGIR a página elegante
-      window.location.href = "cupon.html";
-
-    } catch (err) {
-      msg("Error de conexión. Revisa que tu App web esté en acceso 'Cualquiera' y sea /exec.");
-      btn.disabled = false;
-      btn.textContent = "GENERAR CUPÓN";
+    function fail(t){
+      msg.textContent = t;
+      msg.className = "msg bad";
+      return;
     }
-  });
-</script>
+  </script>
 </body>
 </html>
