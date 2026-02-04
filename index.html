@@ -48,144 +48,31 @@
       border-bottom:1px solid var(--line);
     }
     .content{padding:18px}
-    h1{
-      margin:6px 0 6px;
-      font-size:30px;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:0 0 16px;
-      color:var(--muted);
-      line-height:1.35;
-      font-size:14px;
-    }
+    h1{margin:6px 0 6px;font-size:30px;letter-spacing:.2px;}
+    .sub{margin:0 0 16px;color:var(--muted);line-height:1.35;font-size:14px;}
     label{
-      display:block;
-      margin:14px 0 8px;
-      font-weight:800;
-      letter-spacing:.7px;
-      font-size:12px;
-      text-transform:uppercase;
-      color:#e9edf5;
+      display:block;margin:14px 0 8px;font-weight:800;letter-spacing:.7px;
+      font-size:12px;text-transform:uppercase;color:#e9edf5;
     }
     input, select{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:var(--field);
-      color:var(--text);
-      outline:none;
-      font-size:14px;
+      width:100%;padding:14px 14px;border-radius:14px;border:1px solid var(--line);
+      background:var(--field);color:var(--text);outline:none;font-size:14px;
     }
     input::placeholder{color:rgba(242,244,247,.45)}
-    input:focus, select:focus{
-      border-color: rgba(230,214,168,.55);
-      background:var(--field2);
-    }
-    .rowPhone{
-      display:grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap:10px;
-    }
-    .hint{
-      margin:8px 2px 0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.3;
-    }
+    input:focus, select:focus{border-color: rgba(230,214,168,.55);background:var(--field2);}
+    .rowPhone{display:grid;grid-template-columns: 1.15fr 1fr;gap:10px;}
+    .hint{margin:8px 2px 0;color:var(--muted);font-size:12px;line-height:1.3;}
     .btn{
-      width:100%;
-      margin-top:14px;
-      padding:14px 16px;
-      border-radius:14px;
+      width:100%;margin-top:14px;padding:14px 16px;border-radius:14px;
       border:1px solid rgba(230,214,168,.35);
       background: linear-gradient(180deg, rgba(230,214,168,.22), rgba(230,214,168,.12));
-      color:var(--text);
-      font-weight:900;
-      letter-spacing:2px;
-      cursor:pointer;
-      text-transform:uppercase;
+      color:var(--text);font-weight:900;letter-spacing:2px;cursor:pointer;text-transform:uppercase;
     }
     .btn:disabled{opacity:.6; cursor:not-allowed}
-    .msg{
-      margin:12px 2px 0;
-      font-size:13px;
-      color:#b7c0cf;
-    }
+    .msg{margin:12px 2px 0;font-size:13px;color:#b7c0cf;}
     .msg.bad{color:var(--bad)}
     .msg.ok{color:var(--ok)}
-    .foot{
-      margin:12px 2px 0;
-      color:rgba(255,255,255,.55);
-      font-size:12px;
-      line-height:1.35;
-    }
-
-    /* Pantalla cupón elegante */
-    .couponWrap{
-      display:none;
-      padding:18px;
-      border-top:1px solid var(--line);
-      background: rgba(0,0,0,.20);
-    }
-    .couponCard{
-      border:1px dashed rgba(230,214,168,.55);
-      border-radius:16px;
-      padding:18px;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.65)),
-        url("BANER.jpeg") center/cover no-repeat;
-      position:relative;
-      overflow:hidden;
-    }
-    .couponCard:after{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(900px 300px at 15% 0%, rgba(230,214,168,.18), transparent 60%);
-      pointer-events:none;
-    }
-    .couponInner{position:relative}
-    .couponTitle{
-      text-align:center;
-      font-weight:900;
-      letter-spacing:2px;
-      color:rgba(230,214,168,.95);
-      margin-bottom:10px;
-      text-transform:uppercase;
-    }
-    .couponCode{
-      text-align:center;
-      font-size:28px;
-      font-weight:1000;
-      letter-spacing:3px;
-      margin:6px 0 12px;
-    }
-    .couponMeta{
-      text-align:center;
-      color:rgba(255,255,255,.72);
-      font-size:12px;
-      line-height:1.45;
-    }
-    .back{
-      display:block;
-      margin-top:14px;
-      width:100%;
-      text-align:center;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      color:rgba(255,255,255,.88);
-      text-decoration:none;
-      background: rgba(0,0,0,.20);
-    }
-    .tiny{
-      margin-top:10px;
-      text-align:center;
-      font-size:12px;
-      color:rgba(255,255,255,.55);
-      line-height:1.35;
-    }
+    .foot{margin:12px 2px 0;color:rgba(255,255,255,.55);font-size:12px;line-height:1.35;}
   </style>
 </head>
 
@@ -193,7 +80,7 @@
   <main class="card">
     <div class="banner"></div>
 
-    <div class="content" id="formArea">
+    <div class="content">
       <h1>Cupón de beneficio</h1>
       <p class="sub">Completa tus datos y genera tu cupón. Presenta el cupón en caja para validación.</p>
 
@@ -218,7 +105,7 @@
 
           <input id="celular" placeholder="Solo dígitos" required inputmode="numeric" />
         </div>
-        <p class="hint">Elige tu país y escribe tu número (solo dígitos). Si escoges “Otro”, se usará el número tal cual.</p>
+        <p class="hint">Elige tu país y escribe tu número (solo dígitos).</p>
 
         <label>CORREO</label>
         <input id="email" type="email" placeholder="Ej. nombre@gmail.com" required />
@@ -242,24 +129,9 @@
         <p class="foot">Al enviar aceptas que <b>CÉLINE</b> use estos datos solo para esta promoción y novedades.</p>
       </form>
     </div>
-
-    <!-- Cupón elegante -->
-    <div class="couponWrap" id="couponWrap">
-      <div class="couponCard">
-        <div class="couponInner">
-          <div class="couponTitle">CÉLINE — CUPÓN</div>
-          <div class="couponCode" id="cCode">—</div>
-          <div class="couponMeta" id="cMeta">—</div>
-        </div>
-      </div>
-
-      <a class="back" href="./">Volver</a>
-      <div class="tiny">Presenta este cupón en caja para validar tu beneficio.</div>
-    </div>
   </main>
 
 <script>
-  // ✅ TU LINK /exec (EL NUEVO)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuqU7JeMiO8e1XSjNMsvqWrTEeefNWSaRNAmT4SZSVxZRyTz6gSSggypQpAILVyjGSkQ/exec";
 
   const $ = (id) => document.getElementById(id);
@@ -270,9 +142,7 @@
     msgEl.textContent = text || "";
     msgEl.className = "msg" + (type ? (" " + type) : "");
   }
-
   function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
-
   function isValidUserOrLink(v){
     v = String(v||"").trim();
     if (!v) return false;
@@ -280,10 +150,13 @@
     if (v.startsWith("https://") || v.startsWith("http://")) return true;
     return false;
   }
+  async function safeJson(res){
+    const txt = await res.text();
+    try { return JSON.parse(txt); }
+    catch { return { ok:false, error:"RESPUESTA_NO_JSON", raw: txt }; }
+  }
 
-  $("celular").addEventListener("input", (e) => {
-    e.target.value = onlyDigits(e.target.value);
-  });
+  $("celular").addEventListener("input", (e) => e.target.value = onlyDigits(e.target.value));
 
   $("f").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -308,16 +181,7 @@
 
     const wa_full = (code ? code : "") + celular;
 
-    const payload = {
-      nombre,
-      pais,
-      celular,
-      email,
-      red,
-      usuario,
-      origen: window.location.href,
-      wa_full
-    };
+    const payload = { nombre, pais, celular, email, red, usuario, origen: window.location.href, wa_full };
 
     btn.disabled = true;
     btn.textContent = "GENERANDO...";
@@ -329,7 +193,7 @@
         body: JSON.stringify(payload)
       });
 
-      const out = await res.json();
+      const out = await safeJson(res);
 
       if (!out.ok){
         if (out.error === "DUPLICADO"){
@@ -338,16 +202,20 @@
         return setMsg("Error: " + (out.error || "No se pudo generar el cupón"), "bad");
       }
 
-      // Mostrar cupón elegante en "otra pantalla" dentro del mismo diseño
-      $("formArea").style.display = "none";
-      $("couponWrap").style.display = "block";
-      $("cCode").textContent = out.coupon || "—";
-      $("cMeta").textContent = `${nombre.toUpperCase()} · ${pais} · WhatsApp: ${wa_full}`;
+      const codigo = out.cupon || out.coupon || out.codigo;
+      if (!codigo) return setMsg("No llegó el código. Revisa Apps Script.", "bad");
 
-      setMsg("Cupón generado ✅", "ok");
+      // ✅ SIEMPRE envía a cupon.html (NO coupon.html)
+      const url = new URL("./cupon.html", window.location.href);
+      url.searchParams.set("c", codigo);
+      url.searchParams.set("n", nombre);
+      url.searchParams.set("p", pais);
+      url.searchParams.set("w", wa_full);
+
+      window.location.href = url.toString();
 
     }catch(err){
-      setMsg("Error de conexión. Revisa Apps Script (acceso: Cualquiera) y que el link sea /exec.", "bad");
+      setMsg("Error de conexión. Revisa Apps Script (acceso: Cualquiera) y URL /exec.", "bad");
     }finally{
       btn.disabled = false;
       btn.textContent = "Generar cupón";
