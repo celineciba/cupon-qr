@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Reclama tu cupón</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>🎟️ Reclama tu cupón</h1>
+    <p class="sub">Ingresa tus datos (15 segundos) y recibe tu cupón.</p>
+
+    <form id="f">
+      <label>Nombre y apellido</label>
+      <input name="nombre" required placeholder="Ej: Juan Pérez"/>
+
+      <label>Celular</label>
+      <input name="celular" required placeholder="Ej: 0991234567" inputmode="numeric"/>
+
+      <label>Red favorita</label>
+      <select name="red" required>
+        <option>Instagram</option>
+        <option>TikTok</option>
+        <option>Facebook</option>
+        <option>Otra</option>
+      </select>
+
+      <label>@usuario o link (opcional)</label>
+      <input name="usuario" placeholder="@tuusuario"/>
+
+      <button id="btn" type="submit">Obtener cupón</button>
+      <p id="msg" class="msg"></p>
+    </form>
+
+    <section id="result" class="result hidden">
+      <h2>✅ Tu cupón es:</h2>
+      <div class="coupon" id="coupon"></div>
+      <p class="fine">Muestra este código al pagar. 1 cupón por persona. Sujeto a condiciones.</p>
+      <button id="again" type="button">Registrar otro</button>
+    </section>
+  </main>
+
+<script>
+  // Por ahora lo dejamos así. Luego lo reemplazamos por tu URL del Apps Script /exec
+  const SCRIPT_URL = "";
+
+  const form = document.getElementById("f");
+  const btn = document.getElementById("btn");
+  const msg = document.getElementById("msg");
+  const result = document.getElementById("result");
+  const couponEl = document.getElementById("coupon");
+  const again = document.getElementById("again");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "Guardando...";
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.celular = String(data.celular || "").replace(/\D/g, "");
+
+    if (data.celular.length < 8) {
+      msg.textContent = "Ingresa un celular válido.";
+      btn.disabled = false;
+      btn.textContent = "Obtener cupón";
+      return;
+    }
+
+    // Si todavía no pegaste tu SCRIPT_URL, mostramos un cupón demo para probar la web
+    if (!SCRIPT_URL) {
+      couponEl.textContent = "IBR-DEMO";
+      form.classList.add("hidden");
+      result.classList.remove("hidden");
+      btn.disabled = false;
+      btn.textContent = "Obtener cupón";
+      return;
+    }
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || "Error desconocido");
+
+      couponEl.textContent = json.cupon;
+      form.classList.add("hidden");
+      result.classList.remove("hidden");
+    } catch (err) {
+      msg.textContent = "No se pudo registrar. Revisa la URL del script y vuelve a intentar.";
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Obtener cupón";
+    }
+  });
+
+  again.addEventListener("click", () => {
+    form.reset();
+    result.classList.add("hidden");
+    form.classList.remove("hidden");
+    msg.textContent = "";
+  });
+</script>
+</body>
+</html>
