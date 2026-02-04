@@ -132,6 +132,7 @@
   </main>
 
 <script>
+  // ✅ LINK NUEVO /exec (este es el que debe estar en index)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuqU7JeMiO8e1XSjNMsvqWrTEeefNWSaRNAmT4SZSVxZRyTz6gSSggypQpAILVyjGSkQ/exec";
 
   const $ = (id) => document.getElementById(id);
@@ -202,10 +203,11 @@
         return setMsg("Error: " + (out.error || "No se pudo generar el cupón"), "bad");
       }
 
+      // Apps Script devuelve { ok:true, cupon:"..." }
       const codigo = out.cupon || out.coupon || out.codigo;
       if (!codigo) return setMsg("No llegó el código. Revisa Apps Script.", "bad");
 
-      // ✅ SIEMPRE envía a cupon.html (NO coupon.html)
+      // ✅ envía a cupon.html
       const url = new URL("./cupon.html", window.location.href);
       url.searchParams.set("c", codigo);
       url.searchParams.set("n", nombre);
