@@ -6,125 +6,95 @@
   <title>CÉLINE — Validación Staff</title>
   <style>
     :root{
-      --bg:#0a0b0d;
-      --panel:rgba(17,19,23,.92);
-      --line:rgba(255,255,255,.12);
-      --text:#f2f4f7;
-      --muted:#a6adb9;
-      --accent:rgba(230,214,168,.95);
+      --bg:#0a0b0d;--panel:rgba(17,19,23,.92);--text:#f2f4f7;--muted:#a6adb9;--line:rgba(255,255,255,.12);
+      --gold:rgba(230,214,168,.95);--ok:#a7f3d0;--bad:#ffb4b4;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-    }
-    .card{
-      width:min(560px,100%);
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:18px;
-      overflow:hidden;
-      box-shadow:0 20px 60px rgba(0,0,0,.55);
-    }
-    .head{
-      padding:16px;
-      border-bottom:1px solid var(--line);
-      font-weight:900;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      color:var(--accent);
-    }
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);
+      display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+    .head{padding:16px;border-bottom:1px solid var(--line)}
+    .title{font-weight:900;letter-spacing:1px;color:var(--gold);text-transform:uppercase}
     .content{padding:18px}
-    .code{
-      text-align:center;
-      font-size:30px;
-      font-weight:1000;
-      letter-spacing:3px;
-      margin:14px 0 6px;
+    .code{text-align:center;font-size:30px;font-weight:1000;letter-spacing:3px;margin:12px 0 6px;}
+    .status{text-align:center;margin:10px 0;color:var(--muted)}
+    .status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+    .btnRow{display:flex;gap:10px;margin-top:12px;}
+    button{
+      flex:1;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.20);color:rgba(255,255,255,.88);font-weight:900;cursor:pointer;
     }
-    .note{
-      text-align:center;
-      color:rgba(255,255,255,.72);
-      font-size:13px;
-      margin-bottom:14px;
-      line-height:1.35;
-    }
-    .btnRow{
-      display:flex;
-      gap:10px;
-      margin-top:14px;
-    }
-    button, a.btn{
-      flex:1;
-      display:block;
-      text-align:center;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.25);
-      color:#fff;
-      font-weight:900;
-      text-decoration:none;
-      cursor:pointer;
-    }
-    .small{
-      margin-top:12px;
-      text-align:center;
-      font-size:12px;
-      color:rgba(255,255,255,.55);
-      line-height:1.35;
-    }
+    .small{opacity:.7;margin-top:10px;font-size:12px;text-align:center}
   </style>
 </head>
-
 <body>
+
   <main class="card">
-    <div class="head">VALIDACIÓN STAFF</div>
+    <div class="head"><div class="title">VALIDACIÓN STAFF</div></div>
     <div class="content">
       <div class="code" id="code">—</div>
-      <div class="note">
-        Aquí solo el staff puede canjear con PIN.<br>
-        (Se abre el link directo para evitar bloqueos del iPhone)
-      </div>
+      <div class="status" id="st">Cargando estado...</div>
 
       <div class="btnRow">
-        <a class="btn" id="btnCheck" href="#" target="_blank" rel="noopener">Revisar estado</a>
+        <button id="btnCheck">Revisar estado</button>
         <button id="btnRedeem">Marcar como usado</button>
       </div>
 
-      <div class="small">
-        Si al canjear te sale un texto tipo JSON, está bien: eso confirma que se canjeó.
-      </div>
+      <div class="small">Solo staff con PIN puede canjear.</div>
     </div>
   </main>
 
 <script>
-  // ✅ PON AQUÍ TU WEB APP /exec ACTUAL (el último que estás usando)
+  // ✅ TU WEB APP /exec (AQUÍ es donde va)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPGiGLUjuT0qQUqmyejo6MJenVq1wtl79bsHmSsHD18RKWU6aTZyPPwfxn1IrkRRp0Cw/exec";
 
+  const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(window.location.search);
   const c = (params.get("c") || "").trim();
 
-  document.getElementById("code").textContent = c || "—";
+  $("code").textContent = c || "—";
 
-  const checkUrl = `${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`;
-  document.getElementById("btnCheck").href = checkUrl;
+  async function check(){
+    if(!c){ $("st").textContent = "❌ Falta código."; $("st").className="status bad"; return; }
+    try{
+      const r = await fetch(`${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`);
+      const j = await r.json();
+      if(j.ok && j.status==="VALIDO"){ $("st").textContent="✅ Cupón válido (no usado)."; $("st").className="status ok"; }
+      else if(j.ok && j.status==="USADO"){ $("st").textContent="⚠️ Cupón YA USADO."; $("st").className="status bad"; }
+      else { $("st").textContent="❌ Cupón NO EXISTE."; $("st").className="status bad"; }
+    }catch(e){
+      $("st").textContent="Sin conexión para validar.";
+      $("st").className="status bad";
+    }
+  }
 
-  document.getElementById("btnRedeem").addEventListener("click", () => {
-    if (!c) return alert("No hay código.");
+  async function redeem(){
+    if(!c){ alert("Falta código."); return; }
     const pin = prompt("PIN de caja:");
-    if (!pin) return;
-    // ✅ Redirección directa (NO fetch) -> iPhone no bloquea por CORS
-    const redeemUrl = `${SCRIPT_URL}?action=redeem&c=${encodeURIComponent(c)}&pin=${encodeURIComponent(pin)}`;
-    window.location.href = redeemUrl;
-  });
+    if(!pin) return;
+
+    // ✅ Importante: canje por fetch (NO redirige) => ya no sale Drive en iPhone/PC
+    try{
+      const r = await fetch(`${SCRIPT_URL}?action=redeem&c=${encodeURIComponent(c)}&pin=${encodeURIComponent(pin)}`);
+      const j = await r.json();
+
+      if(j.ok && (j.status==="CANJEADO" || j.status==="USADO")){
+        alert("✅ Canje registrado.");
+        await check();
+      } else {
+        alert("❌ " + (j.error || "No autorizado / error"));
+      }
+    }catch(e){
+      alert("Sin conexión para canjear.");
+    }
+  }
+
+  $("btnCheck").addEventListener("click", check);
+  $("btnRedeem").addEventListener("click", redeem);
+
+  // auto
+  check();
 </script>
 </body>
 </html>
