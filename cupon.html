@@ -6,124 +6,37 @@
   <title>CÉLINE — Cupón</title>
   <style>
     :root{
-      --bg:#0a0b0d;
-      --panel:rgba(17,19,23,.92);
-      --text:#f2f4f7;
-      --muted:#a6adb9;
-      --line:rgba(255,255,255,.12);
-      --gold:rgba(230,214,168,.95);
-      --ok:#a7f3d0;
-      --bad:#ffb4b4;
+      --bg:#0a0b0d;--panel:rgba(17,19,23,.92);--text:#f2f4f7;--muted:#a6adb9;--line:rgba(255,255,255,.12);
+      --gold:rgba(230,214,168,.95);--ok:#a7f3d0;--bad:#ffb4b4;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-    .card{
-      width:min(560px, 100%);
-      background: var(--panel);
-      border:1px solid var(--line);
-      border-radius:20px;
-      overflow:hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);
+      display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55);}
     .banner{
-      height:170px;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.68)),
-        url("BANER.jpeg") center/cover no-repeat;
+      height:170px;background:linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.68)), url("BANER.jpeg") center/cover no-repeat;
       border-bottom:1px solid var(--line);
     }
     .wrap{padding:18px;}
     .couponCard{
-      border:1px dashed rgba(230,214,168,.55);
-      border-radius:16px;
-      padding:18px;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.65)),
-        url("BANER.jpeg") center/cover no-repeat;
-      position:relative;
-      overflow:hidden;
+      border:1px dashed rgba(230,214,168,.55);border-radius:16px;padding:18px;
+      background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.65)), url("BANER.jpeg") center/cover no-repeat;
+      position:relative;overflow:hidden;
     }
-    .couponCard:after{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(900px 300px at 15% 0%, rgba(230,214,168,.18), transparent 60%);
-      pointer-events:none;
-    }
+    .couponCard:after{content:"";position:absolute;inset:0;background:radial-gradient(900px 300px at 15% 0%, rgba(230,214,168,.18), transparent 60%);pointer-events:none;}
     .inner{position:relative}
-    .title{
-      text-align:center;
-      font-weight:900;
-      letter-spacing:2px;
-      color:var(--gold);
-      margin-bottom:10px;
-      text-transform:uppercase;
-    }
-    .code{
-      text-align:center;
-      font-size:30px;
-      font-weight:1000;
-      letter-spacing:3px;
-      margin:6px 0 6px;
-    }
-    .meta{
-      text-align:center;
-      color:rgba(255,255,255,.80);
-      font-size:12px;
-      line-height:1.45;
-      margin-bottom:12px;
-    }
-    .qrWrap{
-      display:flex;
-      justify-content:center;
-      margin:14px 0 10px;
-    }
-    .qrBox{
-      padding:14px;
-      border-radius:16px;
-      border:1px dashed rgba(230,214,168,.55);
-      background: rgba(0,0,0,.22);
-    }
-    .note{
-      text-align:center;
-      font-size:12px;
-      color:rgba(255,255,255,.6);
-      line-height:1.35;
-      margin:10px 0 14px;
-    }
-    .btnRow{
-      display:flex;
-      gap:10px;
-      margin-top:12px;
-    }
-    a.btn{
-      flex:1;
-      display:block;
-      text-align:center;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      color:rgba(255,255,255,.88);
-      text-decoration:none;
-      background: rgba(0,0,0,.20);
-    }
-    .status{
-      text-align:center;
-      margin-top:10px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .status.ok{color:var(--ok)}
-    .status.bad{color:var(--bad)}
+    .title{text-align:center;font-weight:900;letter-spacing:2px;color:var(--gold);margin-bottom:10px;text-transform:uppercase;}
+    .code{text-align:center;font-size:30px;font-weight:1000;letter-spacing:3px;margin:6px 0 6px;}
+    .meta{text-align:center;color:rgba(255,255,255,.80);font-size:12px;line-height:1.45;margin-bottom:12px;}
+    .qrWrap{display:flex;justify-content:center;margin:14px 0 10px;}
+    .qrBox{padding:14px;border-radius:16px;border:1px dashed rgba(230,214,168,.55);background:rgba(0,0,0,.22);}
+    .note{text-align:center;font-size:12px;color:rgba(255,255,255,.6);line-height:1.35;margin:10px 0 14px;}
+    .btnRow{display:flex;gap:10px;margin-top:12px;}
+    a.btn{flex:1;display:block;text-align:center;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);
+      color:rgba(255,255,255,.88);text-decoration:none;background:rgba(0,0,0,.20);}
+    .status{text-align:center;margin-top:10px;font-size:13px;color:var(--muted);}
+    .status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
   </style>
 </head>
 
@@ -160,8 +73,8 @@
   </main>
 
 <script>
-  // ✅ NUEVO WEB APP /exec
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziPg0B1t-E3IMS2VUXd3iR1Eq9xPA9yM_XMbSB9CfcZljez-rdEibyNPTg3j27ih4x/exec";
+  // ✅ IMPORTANTE:
+  // El QR NO abre Apps Script. Abre staff.html (tu sitio) para que iPhone no lo trate como Drive.
 
   const $ = (id) => document.getElementById(id);
 
@@ -174,11 +87,12 @@
   $("code").textContent = c || "—";
   $("meta").textContent = `${(n||"").toUpperCase()} · ${p} · WhatsApp: ${w}`;
 
-  // ✅ QR: abre página de STAFF (pedirá PIN para canjear)
-  const staffUrl = `${SCRIPT_URL}?action=page_staff&c=${encodeURIComponent(c)}`;
-  $("openStaff").href = staffUrl;
+  // ✅ Staff URL EN TU SITIO
+  const staffUrl = new URL("./staff.html", window.location.href);
+  staffUrl.searchParams.set("c", c);
 
-  // Dibuja QR usando servicio público (imagen) y la pone en canvas
+  $("openStaff").href = staffUrl.toString();
+
   async function drawQR(url){
     const qrImgUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(url);
     const img = new Image();
@@ -196,30 +110,7 @@
     img.src = qrImgUrl;
   }
 
-  // Opcional: mostrar estado rápido con check
-  async function checkNow(){
-    if (!c) return;
-    try{
-      const res = await fetch(`${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`);
-      const out = await res.json();
-      if (out.ok && out.status === "VALIDO"){
-        $("status").textContent = "✅ Cupón registrado. (El canje lo hace el staff)";
-        $("status").className = "status ok";
-      } else if (out.ok && out.status === "USADO"){
-        $("status").textContent = "⚠️ Este cupón ya fue usado.";
-        $("status").className = "status bad";
-      } else {
-        $("status").textContent = "❌ Este cupón no existe.";
-        $("status").className = "status bad";
-      }
-    } catch {
-      $("status").textContent = "No se pudo validar ahora (sin conexión).";
-      $("status").className = "status bad";
-    }
-  }
-
-  drawQR(staffUrl);
-  checkNow();
+  drawQR(staffUrl.toString());
 </script>
 </body>
 </html>
