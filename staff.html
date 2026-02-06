@@ -1,62 +1,117 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>CÉLINE — Validación Staff</title>
   <style>
-    :root{--bg:#0a0b0d;--panel:rgba(17,19,23,.92);--text:#f2f4f7;--muted:#a6adb9;--line:rgba(255,255,255,.12);--gold:rgba(230,214,168,.95);}
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);
-      display:flex;align-items:center;justify-content:center;padding:24px;}
-    .card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;padding:18px;}
-    .title{font-weight:900;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
-    .code{font-size:32px;font-weight:1000;letter-spacing:3px;text-align:center;margin:10px 0 14px}
-    .row{display:flex;gap:10px;margin-top:12px}
-    button{flex:1;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.20);color:#fff;font-weight:900;cursor:pointer}
-    .msg{margin-top:12px;color:var(--muted);text-align:center}
-    .small{margin-top:10px;font-size:12px;opacity:.75;text-align:center}
+    :root{--bg:#0a0b0d;--panel:rgba(17,19,23,.92);--text:#f2f4f7;--muted:#a6adb9;--line:rgba(255,255,255,.12);--gold:rgba(230,214,168,.95);--ok:#a7f3d0;--bad:#ffb4b4;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+    .wrap{padding:18px}
+    .box{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;background:rgba(0,0,0,.22)}
+    .title{font-weight:900;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:0 0 10px}
+    .code{font-size:34px;font-weight:1000;letter-spacing:4px;text-align:center;margin:10px 0 10px}
+    .status{margin-top:10px;text-align:center;color:var(--muted)}
+    .status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+    .row{display:flex;gap:10px;margin-top:14px}
+    button{flex:1;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22);color:rgba(255,255,255,.9);font-weight:900;cursor:pointer}
+    .small{margin-top:10px;text-align:center;opacity:.7;font-size:12px}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">Validación Staff</div>
-    <div class="code" id="code">—</div>
-    <div class="msg" id="msg">Listo para revisar/canjear.</div>
+  <main class="card">
+    <div class="wrap">
+      <div class="box">
+        <div class="title">Validación Staff</div>
+        <div class="code" id="code">—</div>
+        <div class="status" id="st">Listo.</div>
 
-    <div class="row">
-      <button onclick="openCheck()">Revisar estado</button>
-      <button onclick="openRedeem()">Marcar como usado</button>
+        <div class="row">
+          <button id="btnCheck">Revisar estado</button>
+          <button id="btnRedeem">Marcar como usado</button>
+        </div>
+
+        <div class="small">✅ Esto SÍ registra en Google Sheet. Solo staff con PIN puede canjear.</div>
+      </div>
     </div>
-
-    <div class="small">✅ Esto registra en Google Sheet. Solo staff con PIN puede canjear.</div>
-  </div>
+  </main>
 
 <script>
-  // 🔥 Pega aquí TU WEB APP /exec FINAL (el nuevo que funciona)
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykUKtx_hgQcWd7pQViFL3g40chOiNA75YXhMr3Wyney-Q69wVlxfDYDo_f6MhTPgjPkQ/exec";
+  // ✅ TU WEB APP (Apps Script /exec)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEyQ4AdE10n3JFTtgH6DKjU38MvplEpdltVCwwe0OLFtgi4hgy7BhkDhu0e-9MQKLsuQ/exec";
 
+  const $ = (id)=>document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const c = (params.get("c") || "").trim();
-  document.getElementById("code").textContent = c || "—";
 
-  function openCheck(){
-    if(!c) return alert("Falta código.");
-    const url = `${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`;
-    window.open(url, "_blank");
-    document.getElementById("msg").textContent = "✅ Estado solicitado. (Si quieres ver el resultado exacto, abre el JSON en una pestaña)";
+  $("code").textContent = c || "—";
+
+  function setStatus(text, type){
+    $("st").textContent = text;
+    $("st").className = "status" + (type ? (" " + type) : "");
   }
 
-  function openRedeem(){
-    if(!c) return alert("Falta código.");
+  // ✅ JSONP helper (evita CORS y evita abrir Drive)
+  function jsonp(url){
+    return new Promise((resolve, reject)=>{
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      window[cb] = (data)=>{
+        cleanup();
+        resolve(data);
+      };
+      function cleanup(){
+        try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+        script.remove();
+      }
+      const script = document.createElement("script");
+      script.src = url + (url.includes("?") ? "&" : "?") + "cb=" + cb;
+      script.onerror = ()=>{ cleanup(); reject(new Error("JSONP_ERROR")); };
+      document.body.appendChild(script);
+    });
+  }
+
+  async function check(){
+    if(!c) return setStatus("❌ Falta el código (c=...)", "bad");
+    setStatus("Cargando estado...", "");
+    try{
+      const url = `${SCRIPT_URL}?action=check&c=${encodeURIComponent(c)}`;
+      const out = await jsonp(url);
+      if(out.ok && out.status==="VALIDO") return setStatus("✅ Cupón válido (no usado).", "ok");
+      if(out.ok && out.status==="USADO")  return setStatus("⚠️ Cupón YA USADO.", "bad");
+      return setStatus("❌ Cupón NO EXISTE.", "bad");
+    }catch{
+      setStatus("❌ No se pudo validar (revisa internet o deployment).", "bad");
+    }
+  }
+
+  async function redeem(){
+    if(!c) return setStatus("❌ Falta el código (c=...)", "bad");
     const pin = prompt("PIN de caja:");
     if(!pin) return;
 
-    const url = `${SCRIPT_URL}?action=redeem&c=${encodeURIComponent(c)}&pin=${encodeURIComponent(pin)}`;
-    // ABRIMOS DIRECTO (sin fetch) para evitar CORS y bloqueos
-    window.open(url, "_blank");
-    document.getElementById("msg").textContent = "✅ Canje solicitado. Revisa el JSON en la pestaña abierta y luego mira el Sheet.";
+    setStatus("Canjeando...", "");
+    try{
+      const url = `${SCRIPT_URL}?action=redeem&c=${encodeURIComponent(c)}&pin=${encodeURIComponent(pin)}`;
+      const out = await jsonp(url);
+
+      if(!out.ok && out.error==="NO_AUTORIZADO") return setStatus("❌ PIN incorrecto.", "bad");
+      if(out.ok && out.status==="CANJEADO")      return setStatus("✅ CANJEADO y registrado en Sheet.", "ok");
+      if(out.ok && out.status==="USADO")         return setStatus("⚠️ Ya estaba usado.", "bad");
+
+      setStatus("❌ Error al canjear: " + (out.error || "desconocido"), "bad");
+    }catch{
+      setStatus("❌ No se pudo canjear (revisa internet o deployment).", "bad");
+    }
   }
+
+  $("btnCheck").addEventListener("click", check);
+  $("btnRedeem").addEventListener("click", redeem);
+
+  // auto-check
+  check();
 </script>
 </body>
 </html>
